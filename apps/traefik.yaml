@@ -21,12 +21,19 @@ spec:
           web:
             port: 8000
             exposedPort: 80
+            redirectTo:
+              port: websecure
           websecure:
             port: 8443
             exposedPort: 443
         logs:
           general:
             level: INFO
+        providers:
+          kubernetesCRD:
+            enabled: true
+          kubernetesIngress:
+            enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: networking
