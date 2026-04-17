@@ -15,3 +15,6 @@ metadata:
 spec:
   ipAddressPools:
     - homelab-pool
+  nodeSelectors:
+    - matchLabels:
+        kubernetes.io/hostname: raspberrypi

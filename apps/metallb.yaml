@@ -16,13 +16,15 @@ spec:
         speaker:
           frr:
             enabled: false
+          podAnnotations:
+            metallb.universe.tf/speaker-member-list: "raspberrypi"
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true
+      selfHeal: false
     syncOptions:
       - CreateNamespace=true
   ignoreDifferences:

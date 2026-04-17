@@ -1,0 +1,35 @@
+image:
+  tag: v1.99.0
+
+immich:
+  metrics:
+    enabled: false
+  persistence:
+    library:
+      existingClaim: immich-library-pvc
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+
+postgresql:
+  enabled: true
+  image:
+    repository: tensorchord/pgvecto-rs
+    tag: pg14-v0.2.0
+  auth:
+    username: immich
+    database: immich
+    existingSecret: immich-secrets
+    secretKeys:
+      adminPasswordKey: db-password
+      userPasswordKey: db-password
+  primary:
+    persistence:
+      enabled: true
+      existingClaim: immich-db-pvc
+
+machine-learning:
+  enabled: false
