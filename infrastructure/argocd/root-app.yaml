@@ -8,9 +8,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/JKlucka/homelab.git
     # to be uncomented when moved to private repo
     # repoURL: git@github.com:JKlucka/homelab.git
+    repoURL: https://github.com/JKlucka/homelab.git
     targetRevision: HEAD
     path: apps
   destination:
@@ -22,3 +22,16 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: immich-redis
+      namespace: media
+      jsonPointers:
+        - /spec
+    - group: apps
+      kind: StatefulSet
+      name: immich-postgres
+      namespace: media
+      jsonPointers:
+        - /spec

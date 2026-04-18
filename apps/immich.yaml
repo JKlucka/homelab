@@ -30,6 +30,13 @@ spec:
                 main:
                   image:
                     tag: v2.7.5
+                  env:
+                    DB_HOSTNAME: immich-postgresql
+                    DB_PORT: "5432"
+                    DB_DATABASE_NAME: immich
+                    DB_USERNAME: immich
+                    DATABASE_URL: postgresql://immich:immich@database:5432/immich
+                    REDIS_HOSTNAME: immich-redis-master
                   envFrom:
                     - secretRef:
                         name: immich-secrets
