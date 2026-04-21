@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ntfy-config
+  namespace: ntfy
+data:
+  server.yml: |
+    base-url: https://ntfy.jklu-lab.eu
+    auth-file: /var/lib/ntfy/user.db
+    auth-default-access: deny-all
+    behind-proxy: true
+    cache-file: /var/cache/ntfy/cache.db
+    cache-duration: 12h
+    attachment-cache-dir: /var/cache/ntfy/attachments
+    attachment-total-size-limit: 1G
+    attachment-file-size-limit: 15M
