@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tailscale
+  namespace: tailscale
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tailscale
+  template:
+    metadata:
+      labels:
+        app: tailscale
+    spec:
+      serviceAccountName: tailscale
+      containers:
+        - name: tailscale
+          image: ghcr.io/tailscale/tailscale:latest
+          env:
+            - name: TS_AUTHKEY
+              valueFrom:
+                secretKeyRef:
+                  name: tailscale-auth
+                  key: TS_AUTHKEY
+            - name: TS_KUBE_SECRET
+              value: tailscale-state
+            - name: TS_USERSPACE
+              value: "false"
+            - name: TS_ROUTES
+              value: "192.168.0.0/24"
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - name: tun
+              mountPath: /dev/net/tun
+      volumes:
+        - name: tun
+          hostPath:
+            path: /dev/net/tun
