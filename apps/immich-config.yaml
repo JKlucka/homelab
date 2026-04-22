@@ -20,7 +20,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-  iignoreDifferences:
+  ignoreDifferences:
     - group: apps
       kind: Deployment
       name: immich-redis
