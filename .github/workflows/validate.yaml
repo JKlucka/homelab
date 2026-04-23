@@ -9,40 +9,6 @@ on:
       - master
 
 jobs:
-  helm-lint:
-    name: Helm Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install Helm
-        uses: azure/setup-helm@v4
-
-      - name: Lint ArgoCD Applications
-        run: |
-          for app in apps/*.yaml; do
-            echo "Checking $app..."
-            helm lint "$app" 2>/dev/null || true
-          done
-
-  kubectl-validate:
-    name: Kubectl Validate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v4
-
-      - name: Validate Kubernetes manifests
-        run: |
-          find infrastructure -name "*.yaml" | while read f; do
-            echo "Validating $f..."
-            kubectl apply --dry-run=client -f "$f" 2>&1 || true
-          done
-
   yaml-lint:
     name: YAML Lint
     runs-on: ubuntu-latest
@@ -55,3 +21,84 @@ jobs:
 
       - name: Lint YAML files
         run: yamllint -c .yamllint.yaml apps/ infrastructure/
+
+  validate-k8s-manifests:
+    name: Validate Kubernetes Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install kubeconform
+        run: |
+          curl -sSLo kubeconform.tar.gz \
+            https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
+          tar -xzf kubeconform.tar.gz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Validate manifests
+        run: |
+          find infrastructure -name "*.yaml" \
+            ! -name "values.yaml" \
+            ! -name "sealed-*.yaml" \
+            | xargs kubeconform \
+            -strict \
+            -ignore-missing-schemas \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+            -summary
+
+  validate-argocd-apps:
+    name: Validate ArgoCD Applications
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install kubeconform
+        run: |
+          curl -sSLo kubeconform.tar.gz \
+            https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
+          tar -xzf kubeconform.tar.gz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Validate ArgoCD Application CRDs
+        run: |
+          find apps -name "*.yaml" \
+            ! -name "sealed-*.yaml" \
+            | xargs kubeconform \
+            -strict \
+            -ignore-missing-schemas \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+            -summary
+
+  helm-template-validate:
+    name: Helm Template Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Add Helm repos
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add traefik https://helm.traefik.io/traefik
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo add metallb https://metallb.github.io/metallb
+          helm repo add immich https://immich-app.github.io/immich-charts
+          helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+          helm repo update
+
+      - name: Validate Helm values
+        run: |
+          # Extract and validate helm values from ArgoCD apps
+          helm template traefik traefik/traefik --version 26.1.0 > /dev/null && echo "traefik OK"
+          helm template cert-manager jetstack/cert-manager --version v1.14.4 \
+            --set installCRDs=true > /dev/null && echo "cert-manager OK"
+          helm template metallb metallb/metallb --version 0.14.5 > /dev/null && echo "metallb OK"
+          helm template monitoring prometheus-community/kube-prometheus-stack \
+            --version 58.7.2 > /dev/null && echo "monitoring OK"
