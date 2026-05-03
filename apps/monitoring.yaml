@@ -25,6 +25,13 @@ spec:
             enabled: true
             storageClassName: local-path
             size: 2Gi
+          defaultDashboardsEnabled: false
+          forceDeployDashboards: false
+          forceDeployDatasources: false
+          sidecar:
+            dashboards:
+              enabled: true
+              label: grafana_custom_dashboard
 
         prometheus:
           prometheusSpec:
@@ -58,6 +65,25 @@ spec:
           admissionWebhooks:
             patch:
               enabled: true
+
+        defaultRules:
+          create: false
+
+        kubeApiServer:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+        kubeProxy:
+          enabled: false
+        coreDns:
+          enabled: false
+        kubeDns:
+          enabled: false
+
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
@@ -68,3 +94,9 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+  ignoreDifferences:
+    - group: ""
+      kind: ConfigMap
+      namespace: monitoring
+      jsonPointers:
+        - /metadata/labels
