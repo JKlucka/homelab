@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mealie
+  namespace: recipes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mealie
+  template:
+    metadata:
+      labels:
+        app: mealie
+    spec:
+      containers:
+        - name: mealie
+          image: ghcr.io/mealie-recipes/mealie:latest
+          ports:
+            - containerPort: 9000
+          env:
+            - name: TZ
+              value: Europe/Prague
+            - name: BASE_URL
+              value: https://recipes.jklu-lab.eu
+            - name: DEFAULT_EMAIL
+              value: jaroslavklucka@proton.me
+            - name: ALLOW_SIGNUP
+              value: "false"
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mealie-data
