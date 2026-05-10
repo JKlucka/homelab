@@ -14,43 +14,6 @@ spec:
         app: qbittorrent
     spec:
       containers:
-        - name: gluetun
-          image: qmcgaw/gluetun:latest
-          securityContext:
-            capabilities:
-              add:
-                - NET_ADMIN
-          env:
-            - name: VPN_SERVICE_PROVIDER
-              value: protonvpn
-            - name: VPN_TYPE
-              value: wireguard
-            - name: WIREGUARD_PRIVATE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: protonvpn-secret
-                  key: WIREGUARD_PRIVATE_KEY
-            - name: SERVER_COUNTRIES
-              value: Netherlands
-            - name: TZ
-              value: Europe/Prague
-            - name: DNS_ADDRESS
-              value: "10.2.0.1"
-            - name: FIREWALL_OUTBOUND_SUBNETS
-              value: "10.42.0.0/16,10.43.0.0/16"
-            - name: FIREWALL_INPUT_PORTS
-              value: "6881"
-          ports:
-            - containerPort: 6881
-              protocol: TCP
-            - containerPort: 6881
-              protocol: UDP
-          volumeMounts:
-            - name: gluetun-data
-              mountPath: /gluetun
-            - name: tun
-              mountPath: /dev/net/tun
-
         - name: qbittorrent
           image: lscr.io/linuxserver/qbittorrent:latest
           env:
@@ -71,9 +34,6 @@ spec:
               mountPath: /downloads
 
       volumes:
-        - name: gluetun-data
-          persistentVolumeClaim:
-            claimName: gluetun-data
         - name: config
           persistentVolumeClaim:
             claimName: qbittorrent-config
@@ -81,7 +41,3 @@ spec:
           hostPath:
             path: /mnt/ssd/downloads
             type: Directory
-        - name: tun
-          hostPath:
-            path: /dev/net/tun
-            type: CharDevice
