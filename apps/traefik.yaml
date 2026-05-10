@@ -15,6 +15,10 @@ spec:
       values: |
         deployment:
           replicas: 1
+        additionalArguments:
+          - "--entrypoints.websecure.transport.respondingtimeouts.readtimeout=600"
+          - "--entrypoints.websecure.transport.respondingtimeouts.writetimeout=600"
+          - "--entrypoints.websecure.transport.respondingtimeouts.idletimeout=600"
         service:
           type: LoadBalancer
           annotations:

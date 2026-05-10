@@ -14,4 +14,17 @@ spec:
           port: 2283
           responseForwarding:
             flushInterval: 1ms
+      middlewares:
+        - name: immich-headers
+          namespace: media
   tls: {}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: immich-headers
+  namespace: media
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Proto: https
