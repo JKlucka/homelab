@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage-config
+  namespace: homepage
+data:
+  settings.yaml: |
+    title: Homelab
+    theme: dark
+    color: slate
+    headerStyle: clean
+
+  services.yaml: |
+    - GitOps:
+        - ArgoCD:
+            href: https://argocd.jklu-lab.eu
+            description: GitOps controller
+            icon: argo-cd.png
+
+    - Media:
+        - Immich:
+            href: https://photos.jklu-lab.eu
+            description: Photo backup
+            icon: immich.png
+        - Jellyfin:
+            href: https://jellyfin.jklu-lab.eu
+            description: Media server
+            icon: jellyfin.png
+        - qBittorrent:
+            href: https://torrents.jklu-lab.eu
+            description: Downloads
+            icon: qbittorrent.png
+
+    - Monitoring:
+        - Grafana:
+            href: https://grafana.jklu-lab.eu
+            description: Dashboards
+            icon: grafana.png
+        - Ntfy:
+            href: https://ntfy.jklu-lab.eu
+            description: Notifications
+            icon: ntfy.png
+
+    - Other:
+        - Mealie:
+            href: https://recipes.jklu-lab.eu
+            description: Recipes (suspended)
+            icon: mealie.png
+        - Home Assistant:
+            href: https://home.jklu-lab.eu
+            description: Home automation (suspended)
+            icon: home-assistant.png
+
+  widgets.yaml: |
+    - resources:
+        cpu: true
+        memory: true
+        disk: /
+
+  bookmarks.yaml: |
+    []
+
+  docker.yaml: |
+    {}
+
+  kubernetes.yaml: |
+    mode: cluster
