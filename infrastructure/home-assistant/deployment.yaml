@@ -20,9 +20,13 @@ spec:
           image: ghcr.io/home-assistant/home-assistant:stable
           ports:
             - containerPort: 8123
+          securityContext:
+            privileged: true
           volumeMounts:
             - name: config
               mountPath: /config
+            - name: zigbee
+              mountPath: /dev/serial/by-id/usb-Itead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_V2_80f111494691f011b7a1ad7629b3d7e9-if00-port0
           env:
             - name: TZ
               value: Europe/Prague
@@ -30,3 +34,7 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: home-assistant-config
+        - name: zigbee
+          hostPath:
+            path: /dev/serial/by-id/usb-Itead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_V2_80f111494691f011b7a1ad7629b3d7e9-if00-port0
+            type: CharDevice

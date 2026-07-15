@@ -29,14 +29,11 @@ spec:
               value: "false"
             - name: TS_ROUTES
               value: "192.168.0.0/24"
+            - name: TS_ACCEPT_DNS
+              value: "false"
           securityContext:
             capabilities:
               add:
                 - NET_ADMIN
           volumeMounts:
             - name: tun
-              mountPath: /dev/net/tun
-      volumes:
-        - name: tun
-          hostPath:
-            path: /dev/net/tun

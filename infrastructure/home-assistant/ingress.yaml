@@ -10,6 +10,19 @@ spec:
     - match: Host(`home.jklu-lab.eu`)
       kind: Rule
       services:
-        - name: home-assistant
+        - kind: TraefikService
+          name: home-assistant-external
           port: 8123
   tls: {}
+---
+apiVersion: traefik.io/v1alpha1
+kind: TraefikService
+metadata:
+  name: home-assistant-external
+  namespace: home-auto
+spec:
+  weighted:
+    services:
+      - name: home-assistant
+        port: 8123
+        weight: 1

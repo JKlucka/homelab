@@ -36,6 +36,7 @@ spec:
         providers:
           kubernetesCRD:
             enabled: true
+            allowCrossNamespace: true
           kubernetesIngress:
             enabled: true
   destination:
